@@ -42,7 +42,7 @@ def handle_message(event):
     global company
     msg = event.message.text
     company = msg  # 將使用者輸入的文字存入 company 變數
-    line_bot_api.reply_message(event.reply_token, TextSendMessage(f'已收到您的輸入：{company}'))
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您輸入的公司為：{company}'))
 
 
 @handler.add(MemberJoinedEvent)
