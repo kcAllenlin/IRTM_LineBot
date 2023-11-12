@@ -14,11 +14,6 @@ handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     msg = event.message.text
-
-    # 使用 session 來儲存每個使用者的公司名稱
-    if 'company' not in session:
-        session['company'] = None
-
     session['company'] = msg
     line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您輸入的公司為：{session["company"]}'))
 
