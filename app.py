@@ -5,7 +5,9 @@ from linebot.models import TextMessage, TextSendMessage, MessageEvent, MemberJoi
 import os
 
 app = Flask(__name__)
-app.secret_key = os.getenv('FLASK_SECRET_KEY')  # 設定 Flask 會話的密鑰
+app.secret_key = os.getenv('FLASK_SECRET_KEY')  # 設定 Flask 會話的 secret key
+app.config['SESSION_TYPE'] = 'filesystem'  # 設定儲存類型
+
 
 line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
 handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
