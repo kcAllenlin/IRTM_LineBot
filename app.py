@@ -12,16 +12,14 @@ app.config['SESSION_TYPE'] = 'filesystem'  # 設定儲存類型
 line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
 handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 
-@app.before_request
-def before_request():
-    session.permanent = True
-
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     msg = event.message.text
     if msg == "我的公司":
         if "company" in session:
+            session.permanent = True
+            app.permanent_session_lifetime = timedelta(days=31)
             line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您目前欲查詢的公司為：{session["company"]}'))
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text="您目前尚未設定欲查詢的公司"))
