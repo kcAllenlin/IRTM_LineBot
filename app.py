@@ -3,6 +3,7 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import TextMessage, TextSendMessage, MessageEvent, MemberJoinedEvent
 import os
+from datetime import timedelta
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')  # 設定 Flask 會話的 secret key
