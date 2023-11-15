@@ -21,13 +21,12 @@ def handle_message(event):
             session.permanent = True
             app.permanent_session_lifetime = timedelta(days=31)
             company_value = session["company"]
-            print(f"Retrieved company from session: {company_value}")
             line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您目前欲查詢的公司為：{company_value}'))
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text="您目前尚未設定欲查詢的公司"))
     else:
         session['company'] = msg
-        print(f"Set company in session: {session['company']}")
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(f"Set company in session: {session['company']}"))
         line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您輸入的公司為：{session["company"]}'))
 
 # 歡迎事件
