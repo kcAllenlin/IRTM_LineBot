@@ -14,8 +14,11 @@ handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     msg = event.message.text
-    session['company'] = msg
-    line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您輸入的公司為：{session["company"]}'))
+    if msg == "我的公司":
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您目前欲查詢的公司為：{session["company"]}'))
+    else:
+        session['company'] = msg
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您輸入的公司為：{session["company"]}'))
 
 # 歡迎事件
 @handler.add(MemberJoinedEvent)
