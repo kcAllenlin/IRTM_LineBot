@@ -12,6 +12,10 @@ app.config['SESSION_TYPE'] = 'filesystem'  # 設定儲存類型
 line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
 handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 
+@app.before_request
+def before_request():
+    session.permanent = True
+
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
