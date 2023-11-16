@@ -3,31 +3,32 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import TextMessage, TextSendMessage, MessageEvent, MemberJoinedEvent
 import os
-from datetime import timedelta
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')  # 設定 Flask 會話的 secret key
-app.config['SESSION_TYPE'] = 'filesystem'  # 設定儲存類型
 
 line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
 handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 
+user_company = {}
+
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    user_id = event.source.user_id
     msg = event.message.text
+
+    if user_id not in user_company:
+        user_company[user_id] = None
+        
     if msg == "我的公司":
-        if "company" in session:
-            session.permanent = True
-            app.permanent_session_lifetime = timedelta(days=31)
-            company_value = session["company"]
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您目前欲查詢的公司為：{company_value}'))
+        if user_company[user_id] != None:
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您目前欲查詢的公司為：{user_company[user_id]}'))
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text="您目前尚未設定欲查詢的公司"))
     else:
-        session['company'] = msg
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(f"Set company in session: {session['company']}"))
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您輸入的公司為：{session["company"]}'))
+        user_company[user_id] = msg
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您輸入的公司為：{user_company[user_id]}'))
 
 # 歡迎事件
 @handler.add(MemberJoinedEvent)
@@ -39,7 +40,7 @@ def welcome(event):
     message = TextSendMessage(text=f'{name}歡迎加入')
     line_bot_api.reply_message(event.reply_token, message)
 
-# 設定 Flask 應用程式的端點
+
 @app.route("/callback", methods=['POST'])
 def callback():
     signature = request.headers['X-Line-Signature']
