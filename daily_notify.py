@@ -108,6 +108,7 @@ def crawler(beginday,stopday):
     return data # TODO: return要改
 
 def line_notify(token, msg):
+    print('token:{}'.format(token))
     headers = {
         "Authorization": "Bearer " + token,
         "Content-Type" : "application/x-www-form-urlencoded" 
