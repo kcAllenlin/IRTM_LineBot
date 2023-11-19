@@ -134,3 +134,6 @@ if __name__ == '__main__':
     msg = crawler(beginday, stopday)
     if msg != None:
       line_notify(token, msg)
+      print('line notify success')
+    else:
+      print('line notify fail')

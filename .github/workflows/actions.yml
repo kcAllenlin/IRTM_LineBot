@@ -2,8 +2,9 @@ name: run daily_notify.py #TODO:整合所有py檔至main.py
 
 on:
   schedule:
-    #- cron: '0 0 * * *' #update at 0:00 UTC times everyday(Github在英國，所以這是台灣8:00am，但時間不準)
-    - cron: '* * * * *'
+    - cron: '0 0 * * *' #update at 0:00 UTC times everyday(Github在英國，所以這是台灣8:00am，但時間不準)
+    push:
+      branches: [master]
 
 jobs:
   build:
