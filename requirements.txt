@@ -1,4 +1,6 @@
 line-bot-sdk
 flask
-openai
 gunicorn
+requests==2.31.0
+lxml
+urllib3
