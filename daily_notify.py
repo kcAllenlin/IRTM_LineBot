@@ -13,7 +13,7 @@ import sys #Adding parameter
 headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18362',
     }
-stat = sys.argv[1]
+#stat = sys.argv[1]
 token = 'vXptaR4F72ehsf7lcuiRo9UdCvurQJUWVeabWZYxafR' #Line Notify Token
     
 #將資料儲存成CSV檔案
