@@ -10,7 +10,17 @@ app.secret_key = os.getenv('FLASK_SECRET_KEY')  # 設定 Flask 會話的 secret 
 line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
 handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 
+#建立字典{使用者id:公司}
 user_company = {}
+
+#讀取現有公司
+stock_name = []
+f = open("Stock_Name.txt", "r")
+for row in f.readlines():
+    name = row.strip()
+    stock_name.append(name)
+f.close()
+
 
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
@@ -27,8 +37,11 @@ def handle_message(event):
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text="您目前尚未設定欲查詢的公司"))
     else:
-        user_company[user_id] = msg
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您輸入的公司為：{user_company[user_id]}'))
+        if msg in stock_name:
+            user_company[user_id] = msg
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您輸入的公司為：{user_company[user_id]}'))
+        else:
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="查無此公司，請重新輸入"))
 
 # 歡迎事件
 @handler.add(MemberJoinedEvent)
