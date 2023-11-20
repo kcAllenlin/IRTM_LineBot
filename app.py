@@ -56,9 +56,11 @@ def welcome(event):
 
 @app.route("/callback", methods=['POST', 'HEAD'])
 def callback():
+    #如果是HEAD請求，即UptimeRobot的監控
     if request.method == 'HEAD':
-        return 'OK
-         
+        return 'OK'
+    
+    #如為POST請求，處理LineBot Webhook     
     signature = request.headers['X-Line-Signature']
     body = request.get_data(as_text=True)
 
