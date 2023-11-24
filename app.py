@@ -1,3 +1,4 @@
+#初步設置_接收使用者輸入之公司_修改儲存位置(字典)
 from flask import Flask, request, abort, session
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
@@ -37,11 +38,14 @@ def handle_message(event):
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text="您目前尚未設定欲查詢的公司"))
     else:
-        if msg in stock_name:
+        if msg in stock_name: #輸入之公司符合規定
             user_company[user_id] = msg
             line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您輸入的公司為：{user_company[user_id]}'))
-        else:
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="查無此公司，請重新輸入"))
+        else:  #輸入之公司不符合規定
+            if user_company[user_id] != None:
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(f'查無此公司，請重新輸入。您目前欲查詢的公司仍為：{user_company[user_id]}'))
+            else:
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="查無此公司，請重新輸入"))
 
 # 歡迎事件
 @handler.add(MemberJoinedEvent)
