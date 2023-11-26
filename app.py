@@ -41,7 +41,10 @@ def handle_message(event):
             user_company[user_id] = msg
             line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您輸入的公司為：{user_company[user_id]}'))
         else:
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="查無此公司，請重新輸入"))
+            if user_company[user_id] != None:
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(f'查無此公司，您目前欲查詢的公司仍為：{user_company[user_id]}'))
+            else:
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="查無此公司，請重新輸入"))
 
 # 歡迎事件
 @handler.add(MemberJoinedEvent)
