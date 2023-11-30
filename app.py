@@ -22,17 +22,6 @@ for row in f.readlines():
     stock_name.append(name)
 f.close()
 
-#定義主動傳送警示訊息的函式
-def send_alert_message(user_id, user_company):
-    try:
-      with open("analyisis.csv", "r") as csvfile:
-          data = csv.DictReader(csvfile)
-          for row in data:
-              if row["name"] == user_company[user_id]:
-                  if row["type"] == "n":
-                      line_bot_api.push_message(user_id, TextSendMessage(f"您的公司：{user_company[user_id]}，今天有一篇新聞的情緒為負"))
-                      line_bot_api.push_message(f"網址：{row["url"]}")
-
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
