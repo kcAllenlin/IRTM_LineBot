@@ -25,13 +25,15 @@ f.close()
 #定義主動傳送警示訊息的函式
 def send_alert_message(user_id, user_company):
     try:
-      with open("analyisis.csv", "r") as csvfile:
-          data = csv.DictReader(csvfile)
-          for row in data:
-              if row["name"] == user_company[user_id]:
-                  if row["type"] == "n":
-                      line_bot_api.push_message(user_id, TextSendMessage(f"您的公司：{user_company[user_id]}，今天有一篇新聞的情緒為負"))
-                      line_bot_api.push_message(f"網址：{row['url']}")
+        with open("analyisis.csv", "r") as csvfile:
+            data = csv.DictReader(csvfile)
+            for row in data:
+                if row["name"] == user_company[user_id]:
+                    if row["type"] == "n":
+                        message = [TextSendMessage(f"您的公司：{user_company[user_id]}，今天有一篇新聞的情緒為負"), TextSendMessage(f"網址：{row['url']}")]
+                        line_bot_api.push_message(user_id, message)
+    except:
+        pass
 
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
