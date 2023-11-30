@@ -4,5 +4,4 @@ gunicorn
 requests==2.31.0
 lxml
 urllib3
-apscheduler.schedulers.background
-apscheduler.triggers.daily
+apscheduler
