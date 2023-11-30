@@ -13,6 +13,8 @@ handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 
 #建立字典{使用者id:公司}
 user_company = {}
+#記錄所有有效輸入的使用者id
+user_id_lst = []
 
 #讀取現有公司
 stock_name = []
@@ -52,6 +54,7 @@ def handle_message(event):
     else:
         if msg in stock_name:
             user_company[user_id] = msg
+            user_id_lst.append(user_id)
             line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您輸入的公司為：{user_company[user_id]}'))
         else:
             if user_company[user_id] != None:
