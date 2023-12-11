@@ -4,6 +4,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import TextMessage, TextSendMessage, MessageEvent, MemberJoinedEvent
 import os
 import csv
+import pandas as pd
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')  # 設定 Flask 會話的 secret key
@@ -17,13 +18,8 @@ user_company = {}
 user_id_lst = []
 
 #讀取現有公司
-stock_name = []
-#f = open("Stock_Name.txt", "r")
-f = open("./data/stockname.csv", "r")
-for row in f.readlines():
-    name = row.strip()
-    stock_name.append(name)
-f.close()
+df = pd.read_csv("./data/stockname.csv", header=None)
+stock_name = df.iloc[:, 1].tolist()
 
 #定義主動傳送警示訊息的函式
 #def send_alert_message(user_id, user_company):
