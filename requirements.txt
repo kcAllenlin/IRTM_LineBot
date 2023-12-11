@@ -9,3 +9,4 @@ opencc-python-reimplemented
 jieba
 pandas
 openpyxl
+psycopg2
