@@ -7,3 +7,4 @@ urllib3
 apscheduler
 opencc-python-reimplemented
 jieba
+pandas
