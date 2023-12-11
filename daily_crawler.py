@@ -198,7 +198,8 @@ if __name__ == '__main__':
     else:
         beginday = '{}-{}-{}'.format(yesterday_year, yesterday_month, yesterday_day)
     begindate = datetime.strptime(beginday, '%Y-%m-%d') 
-    stopdate = current_time + timedelta(days=1) 
+    #stopdate = current_time + timedelta(days=1) #TODO: 要改成今天的日期
+    stopdate = current_time 
     stopday = stopdate.strftime('%Y-%m-%d')
 
     crawler(beginday, stopday) #爬蟲昨日到今日新聞
