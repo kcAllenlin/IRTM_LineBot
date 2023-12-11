@@ -6,14 +6,16 @@ from datetime import datetime,timedelta
 from lxml import etree
 import csv
 import pandas as pd
+import jieba
+import re
+from opencc import OpenCC
 
 headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edge/18.18362',
     }
 
-
 stockname_dict={}
-with open ("./data/stockname.csv","r")as stocknamefile:
+with open ("./data/stockname.csv","r", encoding='utf-8-sig')as stocknamefile:
     rows=csv.reader(stocknamefile)
     for row in rows:
         stocknum=row[0]
@@ -114,6 +116,75 @@ def crawler(beginday,stopday):
         #抓取每篇完整新聞的延遲時間
         time.sleep(0.5)
 
+# 情緒分析function
+def SentimentCalculator(news_csv_path):
+    '''
+    input: 新聞爬蟲csv path
+    output: analysis.csv的dataframe
+    '''
+    # 讀入新聞爬蟲csv
+    df = pd.read_csv(news_csv_path, header = None)
+    df.drop(df.columns[:3], axis = 1, inplace = True)
+    
+    # 創建放結果的列
+    df["type"] = ""
+    df.columns = ["name", "content", "url", "type"]
+    
+    # 字典準備
+    def remove_newlines(cell_value):
+        if isinstance(cell_value, str):
+            return cell_value.replace('\n', '').replace('\r', '')
+        else:
+            return cell_value
+
+    excel_data_negative = pd.read_excel('./data/dict.xlsx', sheet_name='negative')
+    excel_data_negative_without_newlines = excel_data_negative.applymap(remove_newlines)
+    negative_word_list = excel_data_negative_without_newlines.iloc[:, 0].tolist()
+
+    excel_data_positive = pd.read_excel('./data/dict.xlsx', sheet_name='positive')
+    excel_data_positive_without_newlines = excel_data_positive.applymap(remove_newlines)
+    positive_word_list = excel_data_positive_without_newlines.iloc[:, 0].tolist()
+
+    # 依據情緒字典計算情緒分數
+    for i in range(df.shape[0]):
+        
+        article = str(df["content"][i])
+
+        if article is None:
+            sentiment_score = 0
+        else:
+            # 文章轉簡體字
+            cc = OpenCC('t2s')  # 't2s' 表示繁体到簡體
+            article = cc.convert(article)
+
+            # 文章前處理
+            # 斷字
+            article = re.sub(r'[^\w\s]', '', article) # 去掉標點符號
+            seg_list = list(jieba.cut(article, cut_all = False))
+
+            positive_count = 0
+            negative_count = 0
+
+            for word in seg_list:
+                if word in positive_word_list:
+                    positive_count += 1
+                if word in negative_word_list:
+                    negative_count += 1
+
+            if  (positive_count + negative_count) > 0:
+                sentiment_score = (positive_count - negative_count) / (positive_count + negative_count)
+            else:
+                sentiment_score = 0
+
+            if(sentiment_score < 0):
+                df["type"][i] = "n"
+            else:
+                df["type"][i] = "p"
+                
+    df.to_csv('./data/analysis.csv', index=False, encoding='utf-8')
+    
+    return df        
+        
 if __name__ == '__main__':
     current_time = datetime.now()
     # 爬取前一天到今天的新聞(每日8:30am執行)
@@ -130,4 +201,5 @@ if __name__ == '__main__':
     stopdate = current_time + timedelta(days=1) 
     stopday = stopdate.strftime('%Y-%m-%d')
 
-    crawler(beginday, stopday) #昨日到今日
+    crawler(beginday, stopday) #爬蟲昨日到今日新聞
+    SentimentCalculator("./data/raw.csv") #情緒分析
