@@ -26,7 +26,10 @@ jobs:
           
       - name: execute py script # run main.py
         run: python daily_notify.py
-          
+
+      - name: notify
+        run: python app.py
+      
       - name: commit files
         run: |
           git config --local user.email "action@github.com"

@@ -26,15 +26,25 @@ for row in f.readlines():
 f.close()
 
 #定義主動傳送警示訊息的函式
-def send_alert_message(user_id, user_company):
+#def send_alert_message(user_id, user_company):
+def send_alert_message():    
     try:
-        with open("analyisis.csv", "r") as csvfile:
-            data = csv.DictReader(csvfile)
-            for row in data:
-                if row["name"] == user_company[user_id]:
-                    if row["type"] == "n":
-                        message = [TextSendMessage(f"您的公司：{user_company[user_id]}，今天有一篇新聞的情緒為負"), TextSendMessage(f"網址：{row['url']}")]
-                        line_bot_api.push_message(user_id, message)
+        for user in user_id:
+            if user_company[user] != None:
+                with open("./data/analyisis.csv", "r") as csvfile:
+                    data = csv.DictReader(csvfile)
+                    for row in data:
+                        if row["name"] == user_company[user]:
+                            if row["type"] == "n":
+                                message = [TextSendMessage(f"您的公司：{user_company[user]}，今天有一篇新聞的情緒為負"), TextSendMessage(f"網址：{row['url']}")]
+                                line_bot_api.push_message(user, message)
+        # with open("./data/analyisis.csv", "r") as csvfile:
+        #     data = csv.DictReader(csvfile)
+        #     for row in data:
+        #         if row["name"] == user_company[user_id]:
+        #             if row["type"] == "n":
+        #                 message = [TextSendMessage(f"您的公司：{user_company[user_id]}，今天有一篇新聞的情緒為負"), TextSendMessage(f"網址：{row['url']}")]
+        #                 line_bot_api.push_message(user_id, message)
     except:
         pass
 
@@ -92,5 +102,7 @@ def callback():
     return 'OK'
 
 if __name__ == "__main__":
+    send_alert_message()
+
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
