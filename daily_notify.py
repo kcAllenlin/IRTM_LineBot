@@ -13,7 +13,7 @@ headers = {
 
 
 stockname_dict={}
-with open ("./data/stockname.csv","r",encoding='utf-8')as stocknamefile:
+with open ("./data/stockname.csv","r")as stocknamefile:
     rows=csv.reader(stocknamefile)
     for row in rows:
         stocknum=row[0]
