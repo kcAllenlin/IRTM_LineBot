@@ -5,3 +5,5 @@ requests==2.31.0
 lxml
 urllib3
 apscheduler
+opencc-python-reimplemented
+jieba

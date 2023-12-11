@@ -18,7 +18,8 @@ user_id_lst = []
 
 #讀取現有公司
 stock_name = []
-f = open("Stock_Name.txt", "r")
+#f = open("Stock_Name.txt", "r")
+f = open("./data/stockanme.csv", "r")
 for row in f.readlines():
     name = row.strip()
     stock_name.append(name)
