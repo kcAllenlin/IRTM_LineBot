@@ -5,6 +5,7 @@ from linebot.models import TextMessage, TextSendMessage, MessageEvent, MemberJoi
 import os
 import csv
 import pandas as pd
+import psycopg2
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')  # 設定 Flask 會話的 secret key
@@ -17,9 +18,36 @@ user_company = {}
 #記錄所有有效輸入的使用者id
 user_id_lst = []
 
+# 資料庫連線資訊
+db_host = os.getenv("DB_HOST")
+db_port = os.getenv("DB_PORT")
+db_name = os.getenv("DB_NAME")
+db_user = os.getenv("DB_USER")
+db_password = os.getenv("DB_PASSWORD")
+
 #讀取現有公司
 df = pd.read_csv("./data/stockname.csv", header=None)
 stock_name = df.iloc[:, 1].tolist()
+
+# 讀取公司名稱從 PostgreSQL 中
+def get_company_name_from_database(user_id):
+    connection = psycopg2.connect(
+        host=db_host,
+        port=db_port,
+        database=db_name,
+        user=db_user,
+        password=db_password
+    )
+    cursor = connection.cursor()
+    cursor.execute("SELECT company_name FROM user_data WHERE user_id = %s", (user_id,))
+    result = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    if result:
+        return result[0]
+    else:
+        return None
+
 
 #定義主動傳送警示訊息的函式
 #def send_alert_message(user_id, user_company):
@@ -44,6 +72,7 @@ def send_alert_message():
     except:
         pass
 
+
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -55,7 +84,8 @@ def handle_message(event):
 
     if msg == "我的公司":
         if user_company[user_id] != None:
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您目前欲查詢的公司為：{user_company[user_id]}'))
+            company_name = get_company_name_from_database(user_id)
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您目前欲查詢的公司為：{company_name}'))
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text="您目前尚未設定欲查詢的公司"))
     else:
@@ -63,6 +93,20 @@ def handle_message(event):
             user_company[user_id] = msg
             user_id_lst.append(user_id)
             line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您輸入的公司為：{user_company[user_id]}'))
+
+            #將使用者 ID 和公司存入 PostgreSQL
+            connection = psycopg2.connect(
+                host=db_host,
+                port=db_port,
+                database=db_name,
+                user=db_user,
+                password=db_password
+            )
+            cursor = connection.cursor()
+            cursor.execute("INSERT INTO user_data (user_id, company_name) VALUES (%s, %s) ON CONFLICT (user_id) DO UPDATE SET company_name = EXCLUDED.company_name", (user_id, msg))
+            connection.commit()
+            cursor.close()
+            connection.close()
         else:
             if user_company[user_id] != None:
                 line_bot_api.reply_message(event.reply_token, TextSendMessage(f'查無此公司，您目前欲查詢的公司仍為：{user_company[user_id]}'))
