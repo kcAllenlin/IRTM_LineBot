@@ -7,13 +7,13 @@ import csv
 import pandas as pd
 
 app = Flask(__name__)
-# app.secret_key = os.getenv('FLASK_SECRET_KEY')  # 設定 Flask 會話的 secret key
+app.secret_key = os.getenv('FLASK_SECRET_KEY')  # 設定 Flask 會話的 secret key
 
-# line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
-# handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
-app.secret_key = '8c03118fdcd9e097c3ed46e3f305cfe16fcb72fb7250613593f42b3e4be074d5'
-line_bot_api = LineBotApi('yMp/ki+UImkB+yK0i//GBsQHZx9rePTIk8iZkAQeoGlzoSKaGdMikyvqwEy0d3gGItJYL7CEOdnR7rUMFCDuNZfQyLlyD7jA3am7mtJi3/5z+wmIR7GZFhL3DO/VBBP/ba4EWxz78WF2fc661kbCPAdB04t89/1O/w1cDnyilFU=')
-handler = WebhookHandler('3d39780a0df93ffcac125b673ceba3c9')
+line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
+handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
+# app.secret_key = '8c03118fdcd9e097c3ed46e3f305cfe16fcb72fb7250613593f42b3e4be074d5'
+# line_bot_api = LineBotApi('yMp/ki+UImkB+yK0i//GBsQHZx9rePTIk8iZkAQeoGlzoSKaGdMikyvqwEy0d3gGItJYL7CEOdnR7rUMFCDuNZfQyLlyD7jA3am7mtJi3/5z+wmIR7GZFhL3DO/VBBP/ba4EWxz78WF2fc661kbCPAdB04t89/1O/w1cDnyilFU=')
+# handler = WebhookHandler('3d39780a0df93ffcac125b673ceba3c9')
 
 #建立字典{使用者id:公司}
 user_company = {}
@@ -28,7 +28,7 @@ stock_name = df.iloc[:, 1].tolist()
 #def send_alert_message(user_id, user_company):
 def send_alert_message():    
     try:
-        for user in user_id:
+        for user in user_id_lst:
             if user_company[user] != None:
                 with open("./data/analyisis.csv", "r") as csvfile:
                     data = csv.DictReader(csvfile)

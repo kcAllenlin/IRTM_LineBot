@@ -28,7 +28,7 @@ jobs:
         run: python daily_crawler.py
 
       - name: notify
-        run: python app.py
+        run: python notification.py
       
       - name: commit files
         run: |
