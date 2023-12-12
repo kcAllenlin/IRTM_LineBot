@@ -141,32 +141,33 @@ def callback():
 
     return 'OK'
 
+#初始化資料庫
+connection = psycopg2.connect(
+    host=db_host,
+    port=db_port,
+    database=db_name,
+    user=db_user,
+    password=db_password
+)
+cursor = connection.cursor()
+
+#創建 user_data 資料表
+create_table_query = """
+CREATE TABLE IF NOT EXISTS user_data (
+    user_id VARCHAR(255) PRIMARY KEY,
+    company_name VARCHAR(255)
+);
+"""
+
+cursor.execute(create_table_query)
+connection.commit()
+
+cursor.close()
+connection.close()
+
+
 if __name__ == "__main__":
     send_alert_message()
     
-    #初始化資料庫
-    connection = psycopg2.connect(
-        host=db_host,
-        port=db_port,
-        database=db_name,
-        user=db_user,
-        password=db_password
-    )
-    cursor = connection.cursor()
-
-    #創建 user_data 資料表
-    create_table_query = """
-    CREATE TABLE IF NOT EXISTS user_data (
-        user_id VARCHAR(255) PRIMARY KEY,
-        company_name VARCHAR(255)
-    );
-    """
-
-    cursor.execute(create_table_query)
-    connection.commit()
-
-    cursor.close()
-    connection.close()
-
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
