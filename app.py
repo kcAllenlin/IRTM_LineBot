@@ -48,19 +48,52 @@ def get_company_name_from_database(user_id):
     else:
         return None
 
+#讀取所有user_id
+def get_all_user_ids():
+    connection = psycopg2.connect(
+        host=db_host,
+        port=db_port,
+        database=db_name,
+        user=db_user,
+        password=db_password
+    )
+    cursor = connection.cursor()
+    cursor.execute("SELECT user_id FROM user_data")
+    result = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return [row[0] for row in result] if result else []
+
+#檢查資料庫中有無此id
+def check_user_id_exists(user_id):
+    connection = psycopg2.connect(
+        host=db_host,
+        port=db_port,
+        database=db_name,
+        user=db_user,
+        password=db_password
+    )
+    cursor = connection.cursor()
+    cursor.execute("SELECT COUNT(*) FROM user_data WHERE user_id = %s", (user_id,))
+    result = cursor.fetchone()[0]
+    cursor.close()
+    connection.close()
+    return result > 0
 
 #定義主動傳送警示訊息的函式
 #def send_alert_message(user_id, user_company):
 def send_alert_message():    
     try:
-        for user in user_id_lst:
-            if user_company[user] != None:
+        user_ids = get_all_user_ids()
+        for user in user_ids:
+            company_name = get_company_name_from_database(user)
+            if company_name != None:
                 with open("./data/analyisis.csv", "r") as csvfile:
                     data = csv.DictReader(csvfile)
                     for row in data:
-                        if row["name"] == user_company[user]:
+                        if row["name"] == company_name:
                             if row["type"] == "n":
-                                message = [TextSendMessage(f"您的公司：{user_company[user]}，今天有一篇新聞的情緒為負"), TextSendMessage(f"網址：{row['url']}")]
+                                message = [TextSendMessage(f"您的公司：{company_name}，今天有一篇新聞的情緒為負"), TextSendMessage(f"網址：{row['url']}")]
                                 line_bot_api.push_message(user, message)
         # with open("./data/analyisis.csv", "r") as csvfile:
         #     data = csv.DictReader(csvfile)
@@ -83,7 +116,7 @@ def handle_message(event):
         user_company[user_id] = None
 
     if msg == "我的公司":
-        if user_company[user_id] != None:
+        if check_user_id_exists(user_id):
             company_name = get_company_name_from_database(user_id)
             line_bot_api.reply_message(event.reply_token, TextSendMessage(f'您目前欲查詢的公司為：{company_name}'))
         else:
@@ -108,8 +141,9 @@ def handle_message(event):
             cursor.close()
             connection.close()
         else:
-            if user_company[user_id] != None:
-                line_bot_api.reply_message(event.reply_token, TextSendMessage(f'查無此公司，您目前欲查詢的公司仍為：{user_company[user_id]}'))
+            if check_user_id_exists(user_id):
+                company_name = get_company_name_from_database(user_id)
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(f'查無此公司，您目前欲查詢的公司仍為：{company_name}'))
             else:
                 line_bot_api.reply_message(event.reply_token, TextSendMessage(text="查無此公司，請重新輸入"))
 
