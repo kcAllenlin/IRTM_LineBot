@@ -1,4 +1,6 @@
 import psycopg2
+import os 
+
 db_url = os.environ['DATABASE_URL']
 
 def get_all_user_ids():
