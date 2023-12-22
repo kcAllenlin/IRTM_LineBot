@@ -44,8 +44,12 @@ def send_alert_message():
             if company_name != None:
                 for i in range(df.shape[0]):
                     row = df.iloc[i]
+                    print(row["name"])
                     if row["name"] == company_name:
+                        print('yes1')
+                        print(row["type"])
                         if row["type"] == "n":
+                            print('yes2')
                             message = [TextSendMessage(f"您的公司：{company_name}，今天有一篇新聞的情緒為負"), TextSendMessage(f"網址：{row['url']}"), TextSendMessage(f"文章概要：{row['summary']}")]
                             print(message)
                             line_bot_api.push_message(user, message)
