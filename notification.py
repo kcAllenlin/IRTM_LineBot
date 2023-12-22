@@ -1,7 +1,10 @@
 import psycopg2
-import os 
+import os
+from linebot import LineBotApi
+import csv 
 
 db_url = os.environ['DATABASE_URL']
+line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
 
 def get_all_user_ids():
     connection = psycopg2.connect(db_url)
