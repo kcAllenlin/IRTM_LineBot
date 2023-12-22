@@ -43,3 +43,5 @@ def send_alert_message():
                             if row["type"] == "n":
                                 message = [TextSendMessage(f"您的公司：{company_name}，今天有一篇新聞的情緒為負"), TextSendMessage(f"網址：{row['url']}"), TextSendMessage(f"文章概要：{row['summary']}")]
                                 line_bot_api.push_message(user, message)
+    except:
+      pass
