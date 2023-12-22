@@ -1,7 +1,7 @@
 import psycopg2
 import os
 from linebot import LineBotApi
-import csv 
+import pandas as pd 
 
 db_url = os.environ['DATABASE_URL']
 line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
