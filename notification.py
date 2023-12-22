@@ -1,7 +1,15 @@
-from app import user_id_lst, user_company, stock_name, send_alert_message
+import psycopg2
+db_url = os.environ['DATABASE_URL']
 
-# line_bot_api = LineBotApi('yMp/ki+UImkB+yK0i//GBsQHZx9rePTIk8iZkAQeoGlzoSKaGdMikyvqwEy0d3gGItJYL7CEOdnR7rUMFCDuNZfQyLlyD7jA3am7mtJi3/5z+wmIR7GZFhL3DO/VBBP/ba4EWxz78WF2fc661kbCPAdB04t89/1O/w1cDnyilFU=')
-print(user_id_lst)
-print(user_company)
+def get_all_user_ids():
+    connection = psycopg2.connect(db_url)
 
-send_alert_message()
+    cursor = connection.cursor()
+    cursor.execute("SELECT user_id FROM user_data")
+    result = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return [row[0] for row in result] i 
+# send_alert_message()
+user_ids = get_all_user_ids()
+print(user_ids)
