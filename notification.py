@@ -1,7 +1,7 @@
 import psycopg2
 import os
 from linebot import LineBotApi
-from linebot.models import TextSendMessage, 
+from linebot.models import TextSendMessage
 import pandas as pd 
 
 db_url = os.environ['DATABASE_URL']
