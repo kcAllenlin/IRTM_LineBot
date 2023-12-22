@@ -6,6 +6,9 @@ import csv
 db_url = os.environ['DATABASE_URL']
 line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
 
+# data
+df = pd.read_csv("./data/analysis.csv")
+
 def get_all_user_ids():
     connection = psycopg2.connect(db_url)
 
@@ -33,20 +36,19 @@ def get_company_name_from_database(user_id):
 def send_alert_message():    
     try:
         user_ids = get_all_user_ids()
+        print(user_ids)
         for user in user_ids:
             print(user)
             company_name = get_company_name_from_database(user)
             print(company_name)
             if company_name != None:
-                with open("./data/analyisis.csv", "r") as csvfile:
-                    data = csv.DictReader(csvfile)
-                    for row in data:
-                        print(row)
-                        if row["name"] == company_name:
-                            if row["type"] == "n":
-                                message = [TextSendMessage(f"您的公司：{company_name}，今天有一篇新聞的情緒為負"), TextSendMessage(f"網址：{row['url']}"), TextSendMessage(f"文章概要：{row['summary']}")]
-                                print(message)
-                                line_bot_api.push_message(user, message)
+                for i in range(df.shape[0]):
+                    row = df.iloc[i]
+                    if row["name"] == company_name:
+                        if row["type"] == "n":
+                            message = [TextSendMessage(f"您的公司：{company_name}，今天有一篇新聞的情緒為負"), TextSendMessage(f"網址：{row['url']}"), TextSendMessage(f"文章概要：{row['summary']}")]
+                            print(message)
+                            line_bot_api.push_message(user, message)
     except:
         pass
 
