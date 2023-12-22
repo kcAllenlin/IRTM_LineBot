@@ -2,7 +2,7 @@ name: run daily_notify.py #TODO:整合所有py檔至main.py
 
 on:
   schedule:
-    - cron: '25 23 * * *' #update at 0:00 UTC times everyday(Github在英國，所以這是台灣8:00am，但時間不準) #約在早上8:25會執行
+    - cron: '25 23 * * *' #約在早上8:25會執行
   push:
     branches: [master]
 
@@ -31,8 +31,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
    
-      # - name: execute py script # run main.py
-      #   run: python daily_crawler.py
+      - name: execute py script # run main.py
+        run: python daily_crawler.py
 
       - name: notify # run notification.py
         run: python notification.py
