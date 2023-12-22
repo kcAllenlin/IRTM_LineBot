@@ -9,7 +9,7 @@ def get_all_user_ids():
     result = cursor.fetchall()
     cursor.close()
     connection.close()
-    return [row[0] for row in result] i 
+    return [row[0] for row in result] if result else []
 # send_alert_message()
 user_ids = get_all_user_ids()
 print(user_ids)
