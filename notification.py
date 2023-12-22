@@ -49,3 +49,5 @@ def send_alert_message():
                                 line_bot_api.push_message(user, message)
     except:
         pass
+
+send_alert_message()
