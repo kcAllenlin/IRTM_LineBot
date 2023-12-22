@@ -10,3 +10,4 @@ jieba
 pandas
 openpyxl
 psycopg2
+jionlp

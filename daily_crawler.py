@@ -9,6 +9,8 @@ import pandas as pd
 import jieba
 import re
 from opencc import OpenCC
+import jionlp as jio
+import os
 
 headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edge/18.18362',
@@ -72,7 +74,8 @@ def parse(headers,newsID,k,total,beginday,stopday):
     return news
 
 #分析文章數量
-def crawler(beginday,stopday):   
+def crawler(beginday,stopday):
+    os.remove('./data/raw.csv') # initialize the csv file
     #搜尋新聞開始日,格式為 'Y-M-D'
     be_day=beginday
     #搜尋新聞結束日
@@ -128,7 +131,8 @@ def SentimentCalculator(news_csv_path):
     
     # 創建放結果的列
     df["type"] = ""
-    df.columns = ["name", "content", "url", "type"]
+    df["summary"] = ""
+    df.columns = ["name", "content", "url", "type", "summary"]
     
     # 字典準備
     def remove_newlines(cell_value):
@@ -153,6 +157,10 @@ def SentimentCalculator(news_csv_path):
         if article is None:
             sentiment_score = 0
         else:
+            ### summary
+            summary = jio.summary.extract_summary(article).replace(' ', '')
+            df["summary"][i] = summary
+            
             # 文章轉簡體字
             cc = OpenCC('t2s')  # 't2s' 表示繁体到簡體
             article = cc.convert(article)
@@ -198,8 +206,7 @@ if __name__ == '__main__':
     else:
         beginday = '{}-{}-{}'.format(yesterday_year, yesterday_month, yesterday_day)
     begindate = datetime.strptime(beginday, '%Y-%m-%d') 
-    #stopdate = current_time + timedelta(days=1) #TODO: 要改成今天的日期
-    stopdate = current_time 
+    stopdate = current_time + timedelta(days=1) 
     stopday = stopdate.strftime('%Y-%m-%d')
 
     crawler(beginday, stopday) #爬蟲昨日到今日新聞
